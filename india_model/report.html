@@ -1,0 +1,372 @@
+<!doctype html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <title>Productionizing a COVID-19 System Dynamics Model for the Indian Government</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+</head>
+
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>A COVID-19 System Dynamics Model for the Indian Government</h1>
+
+      <p>MS&amp;E 433 - Stanford University</p>
+
+
+      <!-- picture below the heading on the left -->
+      <img src="imgs/stanford.png" width=220>
+      <p class="font-weight-bold">Table Of Contents: </p>
+      Executive Summary <br>
+      Introduction to System Dynamics <br>
+      The COVID-19 SEIR Model for India <br>
+      Running the Simulations in Vensim <br>
+      Next Steps <br>
+      Authors <br>
+
+
+
+</header>
+
+<!-- Here goes the main page --->
+<section>
+
+
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {  autoNumber: "AMS"  },
+      extensions: ["AMSmath.js", "AMSsymbols.js", "autobold.js", "color.js"]
+    }
+  });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<!-- If you guys are going to edit, Start here -->
+<h1>Productionizing a COVID-19 System Dynamics Model for the Indian Government</h1>
+
+Amay Aggarwal, Andrew Hwang, Nishant Jain. Under the Guidance of Professor Ashish Goel
+
+<p>
+
+  <p>
+    <p class="font-weight-bold">Executive Summary.</p> The Office of the Chief Economic Advisor to the Government of India has
+    worked with Professors Jayendran Venkateswaran and Om Damani of the Indian Institute
+    of Technology, Bombay, in order to understand the spread of COVID-19 in India through
+    a System Dynamics SEIR epidemiological model approach. They have partnered with
+    researchers at Stanford University in order to share their findings with the appropriate
+    audience of policymakers, scientists, and the general public.
+    <br><br>
+    This page has two core objectives:
+    <ol>
+      <li>Distill the modeling approach and findings into a clear high-level summary
+        from first principles for the general public.
+      </li>
+      <li>Provide researchers and
+        policymakers with instructions on how to run the simulations themselves using the
+        Vensim modeling tool.
+      </li>
+    </ol>
+    In summary, the System Dynamics modeling approach demonstrates
+    that even with an extended lockdown, pockets of the epidemic will persist and cause
+    a resurgence in viral cases. The model results indicate that universal testing paired
+    with contact tracing and isolation will be required in order for long-term containment
+    to be successful. In order to learn more in-depth about the model after reading this page,
+    we recommend reviewing the following technical report published by the authors of the model
+    on the arXiv <a href="https://arxiv.org/abs/2004.08859">here. </a> </p>
+  </p>
+
+  <!--
+  TOC: on -->
+
+  <!-- !split -->
+
+  <h1 id="math:problem">Introduction to System Dynamics</h1>
+  <h4> What are System Dynamics Models? </h4>
+  <p>
+    System Dynamics is a common modelling approach used to capture nonlinearity in complex systems. The approach focuses on modeling the relations between the different key elements of each system and developing a top-down representation of the
+    system as a whole. To do so, it traditionally incorporates a series of “stock and flow” diagrams, where each stock represents the quantity of a certain entity, and a flow represents the change in amount of a given entity.
+    <br><br>
+    <img src="imgs/systems.png" width=100%>
+    <br><br>
+    The model philosophy involves separating the system into both its structure and relevant parameters. On one hand, the structure of the system is determined by the modeler’s interpretation of real life processes and information flows, whereas parameters tend to be calibrated primarily based on real life data. In developing the structure, many arbitrary choices are made to simplify complex phenomena into tractable problems, and to deal with uncertainty.
+
+    <h4>Why System Dynamics Models? </h4>
+    There are two primary modelling approaches that are currently being used to simulate the effects of Covid-19.
+    <img src="imgs/table.png" width=100%>
+
+    One of the primary advantages of system dynamics is the ability to visualize complex feedback loops and structures within the model. Furthermore, it is often seen as the simpler approach.
+
+    <br><br>
+    <h4>What are SEIR Models? </h4>
+    One type of System Dynamics model that is commonly used in the field of epidemiology is the SEIR model. An SEIR model simulates the following sequential phases of infection in a population: Susceptible (S), Exposed (E), Infectious (I), and Recovered (R). Each node in the SEIR model diagram represents a stock variable containing the number of individuals in the population at that state of infection. Thus, the sum S + E + I + R constitutes a collectively exhaustive representation of the entire population. Quantities flow from one state to another based on the model dynamics parameters specified, enabling the spread of a disease to be simulated. SEIR models can be extended to incorporate other constraints, policy interventions, and state dynamics.
+    <img src="imgs/flow.png" width=100%>
+
+  </p>
+  <p>
+    <h1 id="Covid-19">The COVID-19 SEIR Model for India</h1>
+
+    <h4>Executive Summary </h4>
+    As mentioned, one of our main objectives for this project was to translate scientific research on COVID-19 into a more publicly consumable manner for both other researchers and the general public. Over the course of this section, we hope to analyze one particular System Dynamics (SD) approach to modelling the spread of COVID-19 in India.  Researchers <a href="https://www.ieor.iitb.ac.in/~jayendran">Jayendran Venkateswaran</a> and <a href="https://www.cse.iitb.ac.in/~damani/">Om Damani</a> of the Indian Institute of Technology, Bombay have created and published a paper that describes efforts to model the spread and highlight the effectiveness of varying infection-minimizing policies. Their results indicate that universal testing, with contact tracing and isolation of infected patients, is effective for containing the spread of the virus; though, if lockdown procedures alone are deployed, the epidemic will resurface.
+
+    <br><br>
+
+    We will start by providing greater detail into the design choices of this model as well as organizing their findings into a publicly digestible manner. Then, we will discuss key assumptions that their model uses as well as the model’s limitations. Lastly, we will report key comparisons between Venkateswaran and Damani’s model and many of the existing models to offer insight into some of the strengths, weaknesses, and potential future directions that researchers and the public can adopt to limit the spread of COVID-19.
+
+    <br>
+    <br>
+    <h4> Detailed Overview </h4>
+    In their paper, <a href="https://arxiv.org/abs/2004.08859">“Effectiveness of Testing, Tracing, Social Distancing and Hygiene in Tackling COVID-19 in India: A System Dynamics Model,” </a> Jayendran Venkateswaran and Om Damani have created a System Dynamics model of COVID-19 spread in India that is used to project the rate and number of infections following various infection minimizing measures that are currently being considered on a statewide basis[]. Their model is based off of the standard SEIR model, expanded significantly to also incorporate a detailed age-structured compartmentalization wherein the population is divided into various age groups to indicate how COVID-19 progression and interventions affect each group.
+    <br><br>
+
+    One unique difference of the current model is that it has been able to simulate independent COVID-19 intervention responses such as the effects of testing and contact tracing, as well as isolation, quarantining, and social distancing. Many other SEIR based models (Lourenco et. all. 2020; Ghaffarzadegan and Rahmandad 2020, MedRxiv 2020 are able to detail the disease’s progression. However, approaches that explicitly model quarantining and isolation of both symptomatic and asymptomatic are not as heavily researched.
+    <br>
+    <img src="imgs/model.png" width=100%>
+
+    Above, is a flow diagram of the proposed model. Each of the age-stratified populations are separated. Each age group is divided into Susceptibles (S), Exposed (E), Asymptomatic Infectives (A), Infectious Symptomatic (I) cases, Hospitalized Patients (H), Critical Patients (C), Recovered (R) population, and the Dead (D).
+
+    <br><br>
+    Initially, the Susceptible (S) people get exposed to the virus from contact with an infectious person but all those exposed at the start will be non-symptomatic and non-infectives, only becoming infective after some number of days. Then, some will move from being infectious but not symptomatic to being infectious symptomatics (I). A fraction of them will recover, while others will become Hospitalized and/or Critical Patients who will go on to be either Recovered or Dead.
+
+    <br><br>
+    To model the various intervention policies, this is modeled by the flows out of A and I. Quarantine and Isolation restrict the flow in/out from these groups. Social Distancing measures were similarly modeled using various flow restriction fractions to impose time dependent control measures. For further reference to the specific parameters and flow fractions defined, refer to the appendix of the published technical report.
+
+    <br><br>
+    <h4>Assumptions and Limitations </h4>
+    A number of simplifying assumptions have been made to make the model computationally tractable. These may introduce several key limitations that should be considered when interpreting the results of the model in context.
+    <br><br>
+    <ul>
+             <li>
+               <p class="font-weight-bold">Parameter Estimations</p> <p>First, we must note that many of the model parameter settings were based on published reports and other crowd-sourced data. Due to the recency and infeasibility of total as well as accurate testing, parameters regarding the spread of COVID-19 were found from averaging various sources that included doctors, crowdsourced data, and other published findings.</p>
+             <li>
+               <p class="font-weight-bold">Seasonality and Susceptibility</p><p>
+               One set of assumptions has to do with weather conditions and seasonality: these are explicitly not considered as playing any part in the progression of the spread of the virus. Evidence of seasonality or differential spread rates in different weather conditions seems to be lacking in contrast to other related illnesses like the annual influenza recurrences. Similarly, in order to be conservative rather than optimistic, every person is considered susceptible to the virus, with innate immunity not encoded in the model.</p>
+
+             </li>
+             <li>
+               <p class="font-weight-bold">Testing</p><p>
+               The model also does not currently possess any uncertainty related to testing: the accuracy of testing is assumed to be absolute. Many of the projections and the updating that would be required to effectively monitor and project future growth of spread have an emphasis on testing.</p>
+             </li>
+             <li>
+               <p class="font-weight-bold">COVID-19 Exclusivity</p><p>
+               The model does not consider the many non-COVID related health and economic concerns that are going to be exacerbated and left to be untreated as a result of increased spread and intervention policies. For instance, it is very difficult in many places to be treated for other serious non-COVID illnesses, as hospitals are overwhelmed and are prioritizing the pandemic over other health concerns.</p>
+             </li>
+             <li>
+               <p class="font-weight-bold">Density</p><p>
+               Population density can have a huge impact on the spread of the disease, as evidenced by the concentration of cases across the world in urban centers. For simplicity, this model assumes a uniform density without subdividing the population into distinct density classes such as rural and urban. </p>
+             </li>
+             <li>
+               <p class="font-weight-bold">Homogenous Populations</p><p>
+               Lastly, the model assumes that population stratifications are considered homogenous. In the case of the age stratifications, populations are treated as the same despite key reports that suggest socioeconomic class is an even stronger predictor in understanding a person’s likelihood of recovering from COVID-19. Since it assumes homogeneity, this model does not consider the impact on other socio-economic sections of the population who are unable to potentially self-quarantine. </p>
+             </li>
+    </ul>
+
+    <h4> Comparison with Existing Models </h4>
+    <p class="font-weight-bold"> Contact Tracing and Isolation: </p> One of the core differences between this model and the previous literature is that it is able to simulate the effects of contact tracing and isolation in the SEIR model. The model has built in a structure that can model the effects of these policies on the overall number of infected patients. This allows the model to depict the effect of this policy intervention on the spread of the disease.
+    <br>
+
+    <br>
+    <h4> Policy Implications </h4>
+    The model is useful for understanding the impact of different interventions to decide which strategies are feasible in combating the spread of the virus. One sobering takeaway is that the virus will resurface from a few number of outstanding cases, even with strict lockdown procedures implemented prior. This implies that a lockdown on its own may be helpful at delaying the strain on the capacity of the healthcare system by "flattening the curve," but it must be combined with other interventions for long-term containment. The model seems to indicate that contact tracing and isolation of exposed patients, based on a strategy of universal testing, may be one of the only effective tools for containment. Better hygiene and widespread use of masks are also desirable practices that should be implemented to reduce viral spread.
+
+    <br><br>
+    <h4> Future Directions </h4>
+    There are several ideas on how the model can be extended to capture and simulate different phenomena of interest.
+    <br><br>
+    <ul>
+      <li>
+        <p class="font-weight-bold">Unreliability of Testing </p><p>
+        Currently, the model does not encode any uncertainty in regard to testing. It assumes that the diagnosis of sick patients can be conducted instantaneously and without error in modeling the transmission of the virus across the population. Incorporating the unreliability of testing into the flow model may be a promising direction that makes it more in tune with the dynamics we are observing in the real world today, as current testing efforts do have non-zero error rates.</p>
+      </li>
+      <li>
+        <p class="font-weight-bold">Reinfection</p><p>
+        As an SEIR model, the current COVID-19 system dynamics model we have documented here does not account for reinfection. It assumes that once a patient has recovered, they are removed from the dynamics of further disease spread. There do seem to be reports in the news media of patients contracting the illness after recovering, indicating that recovered patients may be susceptible to contracting the disease. This can be modeled easily as an SEIRS model, where recovered patients proceed to flow into the susceptible pool, but more data on this topic would be required to accurately estimate parameters for this additional flow mechanism.</p>
+      </li>
+      <li>
+        <p class="font-weight-bold">Generalization to Other Regions</p><p>
+        This model has been designed as an SEIR system dynamics approach to simulating the spread of COVID-19 in India in early 2020. This includes hard-coded structural specifics related to the initial lockdown that the Indian government imposed in March 2020. Furthermore, many parameters for the model have been calibrated on data from India. Despite these India-specific modeling choices, much of the structure of the model can be applied to other regions since this is, at its core, an SEIR model. With some recalibration of both the structure and parameters, this Vensim simulation infrastructure could serve as an effective epidemiological modeling tool for COVID-19 in other countries.</p>
+      </li>
+    </ul>
+  </p>
+
+  <p>
+    <h1 id =  "Vensim"> Running the Simulations in Vensim </h1>
+    In this section, we provide instructions on how to download, open, and run the COVID-19 models for yourself using Vensim.
+
+    <br><br>
+    <h4> Introduction to Vensim </h4>
+    <a href = "https://vensim.com/">Vensim </a> is a simulation software package that can be used to create system dynamics models and then export them for viewing and editing. Vensim has several advantages, namely that it provides a variety of options for defining and running simulations with features such as stock and flow variables, dynamic feedback, and causal loops. This level of control, however, can be a source of complexity that makes Vensim somewhat challenging for first-time users. The goal of this section is to provide you with enough information to run the COVID-19 system dynamics model in the appropriate Vensim installation for your needs.
+
+    <br><br>
+    <h4> Versions and Installation </h4>
+    Vensim comes in several versions with different levels of free and paid features depending on the license you choose. This section summarizes the different capabilities while helping guide you to pick a version based on your needs. For an authoritative description of the license limitations, please see the vensim website and make sure you meet the terms and conditions.
+    <br><br>
+    <ul>
+      <li>
+        <p class="font-weight-bold">Vensim Personal Learning Edition (PLE) </p><p>
+        <a href = "https://vensim.com/vensim-personal-learning-edition/">Vensim PLE </a> is a version of Vensim that is free for personal and educational use. It provides a graphical user interface for creating and editing models. As a researcher exploring the COVID-19 models for the first time, this is likely the version of Vensim that you would like to download. A key limitation of Vensim PLE is its lack of <a href = "http://vensim.com/subscripting/">subscripting support</a> that makes modeling subgroups, such as population age ranges, more difficult to encode in the Vensim environment.</p>
+      </li>
+      <li>
+        <p class="font-weight-bold">Vensim Model Reader</p><p>
+        <a href = "http://vensim.com/vensim-model-reader/">This version of Vensim </a>provides read-only access to Vensim models. It is freely available and meant as a utility for viewing models that others have distributed. If you plan to use the models without modification, then this will be the ideal version to download.</p>
+      </li>
+      <li>
+        <p class="font-weight-bold">Vensim Pro</p><p>
+        Vensim Pro is one of the paid versions of Vensim that is available for sale. If you require subscripting capabilities for performing more advanced system dynamics simulations, then you will require a Vensim Pro license. The team in India at IIT Bombay has a version of the model that uses subscripting and hence requires Vensim Pro. Subscripting is used to simplify the process of breaking the stock variables down by age group. However, in the interest of public accessibility and transparency, we have provided a simplified version of the model that treats the population as a single group without subscripting so that it can be viewed in Vensim Reader and modified in Vensim PLE.</p>
+      </li>
+    </ul>
+    Now that you have read through the versions, we <p class="font-weight-bold"> recommend that you install Vensim PLE </p> if you meet the criteria for its license and plan to modify the models. It can be downloaded from the following link: <a href = "https://vensim.com/free-download/"> here </a>. Fill out the form, which will send you an email containing instructions on downloading and installing the software.
+    <br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <p class="font-weight-bold">Note: An Aside on Subscripting </p>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Subscripting is a feature in Vensim that allows subgroups of a particular variable to be defined. This enables complex interactions in a model to be defined in a way such that the resulting model is still visually tractable. For instance, in this SEIR model, we could model different age groups as different variables, but is it far simpler visually to see one node in the flow diagram representing any given stage (such as "Susceptible"). For more details on subscripting, please see <a href ="http://vensim.com/subscripting/"> here. </a>
+
+    <br><br>
+    <h4> Opening the Model </h4>
+    Once you have set up Vensim PLE, you can proceed to open the appropriate model file.
+    [Insert directions about the specific file to open and where to access it (e.g. github, other stanford link, etc). TBD
+
+    <br><br>
+    <h4> Running Simulations </h4>
+
+    Vensim provides the ability to define different views that illustrate aspects of the underlying model. Views can possess visual descriptions of different variables and the relationships between them. They can also be used to present graphs of different variables, allowing one to create dashboards for understanding the outputs of the model. To learn more about views, please read the following links from the official Vensim documentation.<br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href  ="https://www.vensim.com/documentation/how_views_work.htm">
+      https://www.vensim.com/documentation/how_views_work.htm </a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href = "https://www.vensim.com/documentation/22845.htm">
+      https://www.vensim.com/documentation/22845.htm </a><br><br>
+
+    There are several views defined for this COVID-19 SEIR model. For now, we will focus on the Model and Chart views.
+
+    <br><br>
+    <ul>
+      <li>
+        <p class="font-weight-bold">Model View </p><p>
+        To access this model view, select the "View: Model" option in the view selector button at the bottom left of your Vensim PLE interface. This view provides the flow diagram illustrating the progression through the different stages of the model. In essence, it outlines the structure of the SEIR model with flows from one state to another.</p>
+      </li>
+      <li>
+        <p class="font-weight-bold"> Chart View</p><p>
+        To access this chart view, select the "View Chart" option in the view selector button at the bottom left of your Vensim PLE interface. This view provides a dashboard for you to see different values from the model simulation graphed over time, such as the cumulative number of cases and the number of asymptomatic, recovered, and dead patients. Upon opening the model for the first time, the charts may not be populated. The following section will describe how to run the simulations using SynthSim.</p>
+      </li>
+    </ul>
+
+    <p class="font-weight-bold"> SynthSim</p> is an interactive feature provided in the model that enables you to view the effects of certain parameter settings on the output of the model. To trigger SynthSim mode, simply click on the "SynthSim" button towards the top of the Vensim user interface, next to the "Simulate" button.
+    <br><br>
+Once this mode is triggered, you will see both the chart view and model view change: each should possess a new set of slider inputs that allow you to change variable values by dragging the slider bar. You will now be able to modify different parameters across the model and see the resulting impact. The model view will display a graphical depiction of the values of different quantities within each node in the flow diagram over the simulation duration. The chart view was designed to function as a dashboard, within which you will see several graphs populate with values and update in real time as you change parameters.
+<br><br>
+
+To exit SynthSim mode, you can click on the "Stop Setup" Button, also located on the top of the Vensim interface window.
+<br><br>
+<p class="font-weight-bold">Other Tips and Tricks</p>
+Please only edit the model using the Vensim graphical user interface, as it provides more robust safety controls around error checking. Though it is possible to modify the file directly by opening it in a text editor, this is not advised.  <br> <br>
+To change the background color of the model view, simply right click on the Vensim model sketch and a pane should open. Within that pane, you will be able to select a new color for the background. This should help with changing the view to be more palatable to your needs.
+
+<br><br>
+<h4>Additional Resources for Vensim</h4>
+The Vensim website possesses other resources that will be helpful:
+
+<br><br>
+<ol>
+  <li>
+<p class="font-weight-bold">Vensim Documentation: </p><p>
+<a href= "https://www.vensim.com/documentation/index.html"> https://www.vensim.com/documentation/index.html </a></p>
+</li>
+<li>
+  <p class="font-weight-bold">Vensim Index: </p><p>
+<a href = "https://vensim.com/docs/"> https://vensim.com/docs/ </a></p>
+</li>
+</ol>
+  </p>
+
+  <br>
+  <h1> Next Steps </h1>
+  <p>
+It is highly advisable that you proceed to read the technical report prepared by Professor Jayendran Venkateswaran and Professor Om Damani of the Indian Institute of Technology, Bombay. This report describes the models in-depth, explaining the assumptions and key results. It is available on the <a href = "https://arxiv.org/abs/2004.08859">arXiv </a>
+<br><br>
+<p class="font-weight-bold"> Please Use the Model Responsibly </p>
+  <br>
+  Models attempt to capture our understanding of how a particular phenomenon works so that we can better predict the effect of different actions and interventions. However, it is really important to realize that any model has simplifications and assumptions that may make it deviate from the truth. As researchers, we have to strike the right balance of usefulness between the extremes of complexity and tractability. With that in mind, we recommend that, as you use any model to inform policy decisions, you take care to confirm that you're interpreting its results in the correct context. It is important to understand the limitations of any modeling strategy and not take its results as a perfect oracle. Please validate the effects of interventions and question assumptions. Truly participate in the scientific discourse and do not accept anything as absolute without corroborating evidence.
+  </p>
+  <h1> Authors </h1>
+
+  <div class="row">
+  <div class="col-sm-3">
+    <div class="thumbnail">
+      <a href="https://www.linkedin.com/in/amayaggarwal/">
+        <img src="https://media-exp1.licdn.com/dms/image/C5103AQEhzz21VLjEJQ/profile-displayphoto-shrink_800_800/0?e=1592438400&v=beta&t=Fu714vR9lQbqyXB3F0gFEiuiOWlqKssQMqcVdrBlk9E" alt="Ashish Goel" style="width:100%">
+        <div class="caption">
+					<p><a href="https://www.linkedin.com/in/amayaggarwal/">Amay Aggarwal</a>,
+					<br> M.S. in CS, Stanford
+					<br> B.S. in MS&amp;E, Stanford</p>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="thumbnail">
+      <a href="https://www.linkedin.com/in/andy-hwang-639943139/">
+        <img src="https://media-exp1.licdn.com/dms/image/C5603AQHbKu4hY6BZyw/profile-displayphoto-shrink_200_200/0?e=1592438400&v=beta&t=Ia0ykPb48bzbGbx4Y2CPYI4iInTM3cs_piTOxiHPoUY" alt="Ashish Goel" style="width:100%">
+        <div class="caption">
+					<p><a href="https://www.linkedin.com/in/andy-hwang-639943139/">Andrew Hwang</a>,
+					<br> M.S. in CS, Stanford
+					<br> B.S. in CS, Stanford</p>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="thumbnail">
+      <a href="https://www.linkedin.com/in/najain/">
+        <img src="https://media-exp1.licdn.com/dms/image/C4D03AQF5bVPO_Qw-SA/profile-displayphoto-shrink_200_200/0?e=1592438400&v=beta&t=Fbklp7G8_biWJIqycR64hXcEvzahAP9JjygwsIr_LWQ" alt="Ashish Goel" style="width:100%">
+        <div class="caption">
+          <p><a href="https://www.linkedin.com/in/najain/">Nishant Jain</a>
+						<br> Software Engineer, Google
+						<br> M.S. in MS&amp;E, Stanford
+						<br> B.S./M.S. in CS, Yale</p>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="thumbnail">
+      <a href="https://web.stanford.edu/~ashishg">
+        <img src="https://web.stanford.edu/~ashishg/ashishg_2020.jpg" alt="Ashish Goel" style="object-fit: cover; width:100%;">
+        <div class="caption">
+          <p><a href="https://web.stanford.edu/~ashishg">Ashish Goel</a>
+					<br> Professor, MS&amp;E, Stanford
+					<br> Professor, CS (by courtesy), Stanford </p>
+        </div>
+      </a>
+    </div>
+  </div>
+ </div>
+</p>
+
+
+
+
+  </section>
+
+  <footer>
+    <!-- <p><small>Hosted on GitHub Pages &mdash; -->
+    <!-- <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p> -->
+  </footer>
+
+</div>
+<script src="js/scale.fix.js"></script>
+
+</body>
+
+</html>
